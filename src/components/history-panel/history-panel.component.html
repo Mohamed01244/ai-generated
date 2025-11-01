@@ -1,0 +1,40 @@
+
+<div [dir]="T().dir">
+  @if (!history() || history().length === 0) {
+    <div class="text-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
+        <p class="text-gray-500">{{ T().noHistory }}</p>
+    </div>
+  } @else {
+    <div class="space-y-4">
+      @for(item of history(); track item.id) {
+        <div class="border border-gray-200 rounded-lg overflow-hidden transition-shadow hover:shadow-md">
+          <div class="flex justify-between items-center p-4 bg-gray-50 cursor-pointer" (click)="toggleExpand(item.id)">
+            <span class="font-medium text-gray-800 truncate">{{ item.topic }}</span>
+            <div class="flex items-center gap-4 text-sm text-gray-500 flex-shrink-0 ltr:ml-4 rtl:mr-4">
+              <span>{{ item.createdAt | date:'short' }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform" [class.rotate-180]="isExpanded(item.id)" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
+          @if (isExpanded(item.id)) {
+            <div class="p-4 bg-white border-t border-gray-200">
+              <div class="flex flex-wrap gap-2 pb-4 mb-4 border-b border-gray-200">
+                <button (click)="loadItem.emit(item)" class="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-full">{{ T().loadFromHistory }}</button>
+                @if (item.result.article) { <!-- is ArticleHistoryItem -->
+                    <button (click)="analyzeItem.emit(item)" class="px-3 py-1.5 text-xs font-semibold text-green-700 bg-green-100 hover:bg-green-200 rounded-full">{{ T().analyzeAndImprove }}</button>
+                }
+                <button (click)="deleteItem.emit(item)" class="px-3 py-1.5 text-xs font-semibold text-red-700 bg-red-100 hover:bg-red-200 rounded-full ltr:ml-auto rtl:mr-auto">{{ T().deleteFromHistory }}</button>
+              </div>
+              <ng-container *ngTemplateOutlet="itemTemplate() || defaultItemTemplate; context: {$implicit: item}"></ng-container>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<ng-template #defaultItemTemplate let-item>
+  <pre class="bg-gray-800 text-white p-3 rounded-md overflow-x-auto text-xs"><code>{{ item.result.json }}</code></pre>
+</ng-template>

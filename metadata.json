@@ -1,0 +1,5 @@
+{
+  "name": "Copy of AI Content Suite",
+  "description": "An application that uses Gemini to generate high-quality articles and SEO strategies in multiple languages based on user-provided topics and parameters.",
+  "requestFramePermissions": []
+}

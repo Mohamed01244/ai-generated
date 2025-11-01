@@ -1,0 +1,51 @@
+
+<div class="p-4 sm:p-8 max-w-5xl mx-auto" [dir]="T().dir">
+  <main class="bg-white p-4 sm:p-8 rounded-lg shadow-lg">
+    <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 grow text-center">{{ T().appTitle }}</h1>
+      <div class="flex border border-gray-300 rounded-md overflow-hidden">
+        <button 
+          (click)="setUiLang('en')" 
+          [class]="uiLang() === 'en' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'"
+          class="px-4 py-2 font-medium transition-colors duration-200">EN</button>
+        <button 
+          (click)="setUiLang('ar')" 
+          [class]="uiLang() === 'ar' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'"
+          class="px-4 py-2 font-medium transition-colors duration-200 border-s border-gray-300">AR</button>
+      </div>
+    </div>
+
+    <div class="border-b border-gray-200 mb-8">
+      <nav class="flex -mb-px">
+        <button 
+          (click)="mainTab.set('generator')"
+          [class]="mainTab() === 'generator' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+          class="w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm sm:text-base transition-colors duration-200">
+          {{ T().generatorTab }}
+        </button>
+        <button 
+          (click)="mainTab.set('seoSuite')"
+          [class]="mainTab() === 'seoSuite' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+          class="w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm sm:text-base transition-colors duration-200">
+          {{ T().seoSuiteTab }}
+        </button>
+      </nav>
+    </div>
+
+    <div class="transition-opacity duration-500">
+      @if (mainTab() === 'generator') {
+        <app-article-generator 
+          [T]="T()" 
+          [initialData]="articleGeneratorInitialData()"
+          (dataLoaded)="articleGeneratorInitialData.set(null)"
+          (analyzeRequest)="handleAnalyzeRequest($event)" />
+      }
+      @if (mainTab() === 'seoSuite') {
+        <app-seo-suite 
+          [T]="T()" 
+          [initialData]="seoSuiteInitialData()"
+          (dataLoaded)="seoSuiteInitialData.set(null)" />
+      }
+    </div>
+  </main>
+</div>

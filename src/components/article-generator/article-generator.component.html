@@ -1,0 +1,157 @@
+
+<div [dir]="T().dir">
+  <div class="flex border border-gray-300 rounded-md overflow-hidden max-w-sm mb-6">
+    <button (click)="currentView.set('generator')" 
+            [class]="currentView() === 'generator' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'"
+            class="flex-1 px-4 py-2 font-medium transition-colors duration-200">
+      {{ T().generatorTab }}
+    </button>
+    <button (click)="currentView.set('history')"
+            [class]="currentView() === 'history' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'"
+            class="flex-1 px-4 py-2 font-medium transition-colors duration-200 border-s border-gray-300">
+      {{ T().historyTitle }}
+    </button>
+  </div>
+
+  @if (currentView() === 'generator') {
+    <div class="space-y-8">
+      <div>
+        <label for="topic" class="block text-sm font-medium text-gray-700 mb-1">{{ T().topicLabel }}</label>
+        <input id="topic" type="text" [value]="topic()" (input)="topic.set($any($event.target).value)"
+               [placeholder]="T().topicPlaceholder"
+               class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div>
+          <label for="article_language" class="block text-sm font-medium text-gray-700 mb-1">{{ T().langLabel }}</label>
+          <select id="article_language" [value]="params().article_language" (change)="updateParam('article_language', $any($event.target).value)" class="w-full p-2 border border-gray-300 rounded-md shadow-sm">
+            @for(lang of LANGUAGES; track lang){
+              <option [value]="lang">{{ LANGUAGE_MAP[T().langCode][lang] || lang }}</option>
+            }
+          </select>
+        </div>
+         <!-- Other select inputs follow the same pattern -->
+         <div>
+          <label for="creativity_level" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+            {{ T().creativityLabel }}
+            <app-tooltip [text]="T().creativityTooltip" [activeTooltip]="activeTooltip()" (tooltipClick)="activeTooltip.set(activeTooltip() ? null : 'creativity')" tooltipId="creativity"/>
+          </label>
+          <select id="creativity_level" [value]="params().creativity_level" (change)="updateParam('creativity_level', $any($event.target).value)" class="w-full p-2 border border-gray-300 rounded-md shadow-sm">
+            @for(option of T().options.creativity | keyvalue; track option.key){
+              <option [value]="option.key">{{ option.value }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label for="article_length" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+            {{ T().lengthLabel }}
+             <app-tooltip [text]="T().lengthTooltip" [activeTooltip]="activeTooltip()" (tooltipClick)="activeTooltip.set(activeTooltip() ? null : 'length')" tooltipId="length"/>
+          </label>
+          <select id="article_length" [value]="params().article_length" (change)="updateParam('article_length', $any($event.target).value)" class="w-full p-2 border border-gray-300 rounded-md shadow-sm">
+             @for(option of T().options.article_length | keyvalue; track option.key){
+              <option [value]="option.key">{{ option.value }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label for="tone" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+            {{ T().toneLabel }}
+            <app-tooltip [text]="T().toneTooltip" [activeTooltip]="activeTooltip()" (tooltipClick)="activeTooltip.set(activeTooltip() ? null : 'tone')" tooltipId="tone"/>
+          </label>
+          <select id="tone" [value]="params().tone" (change)="updateParam('tone', $any($event.target).value)" class="w-full p-2 border border-gray-300 rounded-md shadow-sm">
+            @for(option of T().options.tone | keyvalue; track option.key){
+              <option [value]="option.key">{{ option.value }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label for="article_theme" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+            {{ T().themeLabel }}
+            <app-tooltip [text]="T().themeTooltip" [activeTooltip]="activeTooltip()" (tooltipClick)="activeTooltip.set(activeTooltip() ? null : 'theme')" tooltipId="theme"/>
+          </label>
+          <select id="article_theme" [value]="params().article_theme" (change)="updateParam('article_theme', $any($event.target).value)" class="w-full p-2 border border-gray-300 rounded-md shadow-sm">
+            @for(option of T().options.article_theme | keyvalue; track option.key){
+              <option [value]="option.key">{{ option.value }}</option>
+            }
+          </select>
+        </div>
+        <div class="md:col-span-2 lg:col-span-1 flex items-center justify-center pt-6">
+          <label for="use_google_search" class="flex items-center gap-2 text-sm font-medium text-gray-700">
+            <input type="checkbox" id="use_google_search" [checked]="params().use_google_search" (change)="updateParam('use_google_search', $any($event.target).checked)" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+            <span>{{ T().googleSearchLabel }}</span>
+             <app-tooltip [text]="T().googleSearchTooltip" [activeTooltip]="activeTooltip()" (tooltipClick)="activeTooltip.set(activeTooltip() ? null : 'gsearch')" tooltipId="gsearch"/>
+          </label>
+        </div>
+      </div>
+
+      <fieldset class="border border-gray-300 p-4 rounded-md">
+        <legend class="px-2 font-medium text-gray-800">{{ T().contentStructureTitle }}</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            <!-- More select inputs -->
+        </div>
+      </fieldset>
+
+      <fieldset class="border border-gray-300 p-4 rounded-md">
+        <legend class="px-2 font-medium text-gray-800">{{ T().qualityValueTitle }}</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            <!-- More select inputs -->
+        </div>
+      </fieldset>
+
+      <fieldset class="border border-gray-300 p-4 rounded-md">
+        <legend class="px-2 font-medium text-gray-800">{{ T().seoTitle }}</legend>
+        <div class="space-y-6 pt-2">
+            <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
+              <h4 class="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                {{ T().seoAssistantTitle }}
+                 <app-tooltip [text]="T().suggestTooltip" [activeTooltip]="activeTooltip()" (tooltipClick)="activeTooltip.set(activeTooltip() ? null : 'suggest')" tooltipId="suggest"/>
+              </h4>
+              <div class="flex flex-col sm:flex-row items-end gap-4">
+                <div class="w-full">
+                  <label for="seed_keyword" class="block text-xs font-medium text-gray-600 mb-1">{{ T().seedKeywordLabel }}</label>
+                  <input type="text" id="seed_keyword" [value]="seedKeyword()" (input)="seedKeyword.set($any($event.target).value)" [placeholder]="T().seedKeywordPlaceholder" class="w-full p-2 text-sm border border-gray-300 rounded-md">
+                </div>
+                <button (click)="generateSeoSuggestions()" [disabled]="isSuggesting() || !seedKeyword().trim()" class="w-full sm:w-auto flex justify-center items-center gap-2 px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 disabled:bg-gray-400 transition-colors">
+                  @if(isSuggesting()){ <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> }
+                  {{ isSuggesting() ? T().suggestingButton : T().suggestButton }}
+                </button>
+              </div>
+            </div>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- SEO text inputs -->
+             </div>
+        </div>
+      </fieldset>
+      
+      <button (click)="generateArticle()" [disabled]="loading() || !topic().trim()" 
+              class="w-full flex justify-center items-center gap-2 py-3 px-4 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 disabled:bg-blue-300 transition-colors duration-200">
+        @if(loading()){ <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> }
+        {{ loading() ? T().generatingButton : T().generateButton }}
+      </button>
+
+      @if(error()){
+        <div class="mt-6 p-4 bg-red-100 border border-red-300 text-red-800 rounded-md text-center">
+          {{ error() }}
+        </div>
+      }
+
+      @if(result()){
+        <app-article-result [T]="T()" [result]="result()" [theme]="params().article_theme" (analyze)="handleAnalyze({topic: topic(), params: params(), result: result()!, id: 0, createdAt: ''})" />
+      }
+    </div>
+  }
+  @if (currentView() === 'history') {
+    <app-history-panel
+      [history]="history()"
+      [T]="T()"
+      (loadItem)="loadFromHistory($event)"
+      (deleteItem)="deleteFromHistory($event.id)"
+      (analyzeItem)="handleAnalyze($event)"
+    >
+      <ng-template #itemTemplate let-item>
+        <app-article-result [T]="T()" [result]="item.result" [theme]="item.params.article_theme" (analyze)="handleAnalyze(item)" />
+      </ng-template>
+    </app-history-panel>
+  }
+</div>

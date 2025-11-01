@@ -1,0 +1,84 @@
+
+<div [dir]="T().dir">
+  <div class="flex border border-gray-300 rounded-md overflow-hidden max-w-sm mb-6">
+    <button (click)="currentView.set('new')" 
+            [class]="currentView() === 'new' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'"
+            class="flex-1 px-4 py-2 font-medium transition-colors duration-200">
+      {{ T().newAnalysis }}
+    </button>
+    <button (click)="currentView.set('history')"
+            [class]="currentView() === 'history' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'"
+            class="flex-1 px-4 py-2 font-medium transition-colors duration-200 border-s border-gray-300">
+      {{ T().seoHistory }}
+    </button>
+  </div>
+
+  @if(currentView() === 'new') {
+    <div class="space-y-6">
+      <h3 class="text-xl font-semibold text-gray-800">{{ T().seoSuitePageTitle }}</h3>
+      
+      <div>
+        <label for="seo-topic" class="block text-sm font-medium text-gray-700 mb-1">{{ T().seoTopicLabel }}</label>
+        <input id="seo-topic" type="text" [value]="topic()" (input)="topic.set($any($event.target).value)" 
+               [placeholder]="T().seoTopicPlaceholder"
+               class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <label for="seo_language" class="block text-sm font-medium text-gray-700 mb-1">{{ T().langLabel }}</label>
+          <select id="seo_language" [value]="params().language" (change)="updateParam('language', $any($event.target).value)" class="w-full p-2 border border-gray-300 rounded-md shadow-sm">
+            @for(lang of LANGUAGES; track lang){
+              <option [value]="lang">{{ LANGUAGE_MAP[T().langCode][lang] || lang }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label for="country" class="block text-sm font-medium text-gray-700 mb-1">{{ T().targetCountryLabel }}</label>
+          <select id="country" [value]="params().country" (change)="updateParam('country', $any($event.target).value)" class="w-full p-2 border border-gray-300 rounded-md shadow-sm">
+             @for(country of COUNTRY_MAP[T().langCode] | keyvalue; track country.key){
+              <option [value]="country.key">{{ country.value }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label for="intent" class="block text-sm font-medium text-gray-700 mb-1">{{ T().searchIntentLabel }}</label>
+          <select id="intent" [value]="params().intent" (change)="updateParam('intent', $any($event.target).value)" class="w-full p-2 border border-gray-300 rounded-md shadow-sm">
+            @for(option of T().options.search_intent | keyvalue; track option.key){
+              <option [value]="option.key">{{ option.value }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div>
+        <label for="competitors" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+          {{ T().competitorsLabel }}
+          <app-tooltip [text]="T().competitorsTooltip" [activeTooltip]="activeTooltip()" (tooltipClick)="activeTooltip.set(activeTooltip() ? null : 'competitors')" tooltipId="competitors"/>
+        </label>
+        <textarea id="competitors" [value]="params().competitors" (input)="updateParam('competitors', $any($event.target).value)" 
+                  rows="3" [placeholder]="'https://example.com/blog/article1...'"
+                  class="w-full p-2 border border-gray-300 rounded-md shadow-sm"></textarea>
+      </div>
+      
+      <button (click)="generateSeoStrategy()" [disabled]="loading() || !topic().trim()" 
+              class="w-full flex justify-center items-center gap-2 py-3 px-4 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 disabled:bg-green-300 transition-colors duration-200">
+        @if(loading()){ <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> }
+        {{ loading() ? T().analyzingButton : T().analyzeButton }}
+      </button>
+
+      @if(error()){
+        <div class="mt-6 p-4 bg-red-100 border border-red-300 text-red-800 rounded-md text-center">
+          {{ error() }}
+        </div>
+      }
+      
+      <!-- SEO Result Component will go here -->
+    </div>
+  }
+  @if(currentView() === 'history') {
+    <div class="text-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
+        <p class="text-gray-500">{{ T().noHistory }}</p>
+    </div>
+  }
+
+</div>
